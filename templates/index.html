@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Area Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 2rem;
+        }
+        .calculator-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .shape-inputs {
+            display: none;
+        }
+        .shape-inputs.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="calculator-container">
+            <h1 class="text-center mb-4">Area Calculator</h1>
+            
+            <div class="mb-3">
+                <label for="shape" class="form-label">Select Shape:</label>
+                <select class="form-select" id="shape">
+                    <option value="square">Square</option>
+                    <option value="rectangle">Rectangle</option>
+                    <option value="triangle">Triangle</option>
+                    <option value="circle">Circle</option>
+                </select>
+            </div>
+
+            <div id="square-inputs" class="shape-inputs active">
+                <div class="mb-3">
+                    <label for="side" class="form-label">Side Length:</label>
+                    <input type="number" class="form-control" id="side" step="0.01">
+                </div>
+            </div>
+
+            <div id="rectangle-inputs" class="shape-inputs">
+                <div class="mb-3">
+                    <label for="length" class="form-label">Length:</label>
+                    <input type="number" class="form-control" id="length" step="0.01">
+                </div>
+                <div class="mb-3">
+                    <label for="width" class="form-label">Width:</label>
+                    <input type="number" class="form-control" id="width" step="0.01">
+                </div>
+            </div>
+
+            <div id="triangle-inputs" class="shape-inputs">
+                <div class="mb-3">
+                    <label for="base" class="form-label">Base:</label>
+                    <input type="number" class="form-control" id="base" step="0.01">
+                </div>
+                <div class="mb-3">
+                    <label for="height" class="form-label">Height:</label>
+                    <input type="number" class="form-control" id="height" step="0.01">
+                </div>
+            </div>
+
+            <div id="circle-inputs" class="shape-inputs">
+                <div class="mb-3">
+                    <label for="radius" class="form-label">Radius:</label>
+                    <input type="number" class="form-control" id="radius" step="0.01">
+                </div>
+            </div>
+
+            <button class="btn btn-primary w-100" onclick="calculateArea()">Calculate Area</button>
+            
+            <div class="mt-4">
+                <h3 class="text-center">Result</h3>
+                <div id="result" class="text-center fs-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('shape').addEventListener('change', function() {
+            // Hide all input sections
+            document.querySelectorAll('.shape-inputs').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Show the selected shape's input section
+            document.getElementById(this.value + '-inputs').classList.add('active');
+        });
+
+        function calculateArea() {
+            const shape = document.getElementById('shape').value;
+            let dimensions = {};
+            
+            switch(shape) {
+                case 'square':
+                    dimensions.side = document.getElementById('side').value;
+                    break;
+                case 'rectangle':
+                    dimensions.length = document.getElementById('length').value;
+                    dimensions.width = document.getElementById('width').value;
+                    break;
+                case 'triangle':
+                    dimensions.base = document.getElementById('base').value;
+                    dimensions.height = document.getElementById('height').value;
+                    break;
+                case 'circle':
+                    dimensions.radius = document.getElementById('radius').value;
+                    break;
+            }
+
+            fetch('/calculate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    shape: shape,
+                    dimensions: dimensions
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('result').textContent = 'Error: ' + data.error;
+                } else {
+                    document.getElementById('result').textContent = `Area: ${data.area} square units`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('result').textContent = 'Error calculating area';
+            });
+        }
+    </script>
+</body>
+</html> 
