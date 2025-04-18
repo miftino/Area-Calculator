@@ -17,6 +17,25 @@ def calculate_area(shape, dimensions):
     elif shape == 'circle':
         radius = float(dimensions['radius'])
         return 3.14159 * radius * radius
+    elif shape == 'trapezoid':
+        base1 = float(dimensions['base1'])
+        base2 = float(dimensions['base2'])
+        height = float(dimensions['height'])
+        return 0.5 * (base1 + base2) * height
+    elif shape == 'parallelogram':
+        base = float(dimensions['base'])
+        height = float(dimensions['height'])
+        return base * height
+    elif shape == 'pentagon':
+        side = float(dimensions['side'])
+        return (5 * side * side * Math.cos(Math.PI/5)) / (4 * Math.sin(Math.PI/5))
+    elif shape == 'hexagon':
+        side = float(dimensions['side'])
+        return ((3 * Math.sqrt(3)) / 2) * side * side
+    elif shape == 'ellipse':
+        majorAxis = float(dimensions['majorAxis'])
+        minorAxis = float(dimensions['minorAxis'])
+        return Math.PI * majorAxis * minorAxis
     return 0
 
 @app.route('/')

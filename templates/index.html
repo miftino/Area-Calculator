@@ -3,98 +3,403 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Area Calculator</title>
+    <title>Math Tools</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #f8f9fa;
-            padding-top: 2rem;
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #2ecc71;
+            --background-color: #f5f6fa;
+            --text-color: #2c3e50;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
+        body {
+            background-color: var(--background-color);
+            padding-top: 2rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+        }
+
         .calculator-container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
             background-color: white;
             padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
         }
+
+        .nav-tabs {
+            border-bottom: 2px solid #e9ecef;
+            margin-bottom: 2rem;
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--text-color);
+            border: none;
+            padding: 1rem 2rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--secondary-color);
+            background-color: transparent;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--secondary-color);
+            background-color: transparent;
+            border-bottom: 3px solid var(--secondary-color);
+        }
+
+        /* Calculator Styles */
+        .calculator {
+            background-color: var(--primary-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .calc-display {
+            width: 100%;
+            height: 80px;
+            font-size: 2rem;
+            text-align: right;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #ecf0f1;
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .calc-btn {
+            width: 70px;
+            height: 70px;
+            margin: 5px;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            transition: all 0.2s;
+            box-shadow: var(--box-shadow);
+        }
+
+        .calc-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .calc-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .number-btn {
+            background-color: #34495e;
+            color: white;
+        }
+
+        .number-btn:hover {
+            background-color: #2c3e50;
+        }
+
+        .operator-btn {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .operator-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .equals-btn {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .equals-btn:hover {
+            background-color: #27ae60;
+        }
+
+        .clear-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .clear-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .calc-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .calc-buttons-container {
+            background-color: #34495e;
+            padding: 15px;
+            border-radius: var(--border-radius);
+        }
+
+        /* Area Calculator Styles */
         .shape-inputs {
             display: none;
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
+
         .shape-inputs.active {
             display: block;
+            opacity: 1;
+        }
+
+        .form-select, .form-control {
+            border-radius: var(--border-radius);
+            border: 1px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-select:focus, .form-control:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow);
+        }
+
+        .result {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-top: 1.5rem;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        h2, h3 {
+            color: var(--text-color);
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="calculator-container">
-            <h1 class="text-center mb-4">Area Calculator</h1>
+            <h1 class="text-center">Math Tools</h1>
             
-            <div class="mb-3">
-                <label for="shape" class="form-label">Select Shape:</label>
-                <select class="form-select" id="shape">
-                    <option value="square">Square</option>
-                    <option value="rectangle">Rectangle</option>
-                    <option value="triangle">Triangle</option>
-                    <option value="circle">Circle</option>
-                </select>
-            </div>
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="area-tab" data-bs-toggle="tab" data-bs-target="#area" type="button" role="tab">Area Calculator</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="calc-tab" data-bs-toggle="tab" data-bs-target="#calculator" type="button" role="tab">Calculator</button>
+                </li>
+            </ul>
 
-            <div id="square-inputs" class="shape-inputs active">
-                <div class="mb-3">
-                    <label for="side" class="form-label">Side Length:</label>
-                    <input type="number" class="form-control" id="side" step="0.01">
-                </div>
-            </div>
+            <div class="tab-content" id="myTabContent">
+                <!-- Area Calculator Tab -->
+                <div class="tab-pane fade show active" id="area" role="tabpanel">
+                    <div class="mb-4">
+                        <label for="shape" class="form-label">Select Shape:</label>
+                        <select class="form-select" id="shape">
+                            <option value="square">Square</option>
+                            <option value="rectangle">Rectangle</option>
+                            <option value="triangle">Triangle</option>
+                            <option value="circle">Circle</option>
+                            <option value="trapezoid">Trapezoid</option>
+                            <option value="parallelogram">Parallelogram</option>
+                            <option value="pentagon">Regular Pentagon</option>
+                            <option value="hexagon">Regular Hexagon</option>
+                            <option value="ellipse">Ellipse</option>
+                        </select>
+                    </div>
 
-            <div id="rectangle-inputs" class="shape-inputs">
-                <div class="mb-3">
-                    <label for="length" class="form-label">Length:</label>
-                    <input type="number" class="form-control" id="length" step="0.01">
-                </div>
-                <div class="mb-3">
-                    <label for="width" class="form-label">Width:</label>
-                    <input type="number" class="form-control" id="width" step="0.01">
-                </div>
-            </div>
+                    <div id="square-inputs" class="shape-inputs active">
+                        <div class="mb-3">
+                            <label for="side" class="form-label">Side Length:</label>
+                            <input type="number" class="form-control" id="side" step="0.01">
+                        </div>
+                    </div>
 
-            <div id="triangle-inputs" class="shape-inputs">
-                <div class="mb-3">
-                    <label for="base" class="form-label">Base:</label>
-                    <input type="number" class="form-control" id="base" step="0.01">
-                </div>
-                <div class="mb-3">
-                    <label for="height" class="form-label">Height:</label>
-                    <input type="number" class="form-control" id="height" step="0.01">
-                </div>
-            </div>
+                    <div id="rectangle-inputs" class="shape-inputs">
+                        <div class="mb-3">
+                            <label for="length" class="form-label">Length:</label>
+                            <input type="number" class="form-control" id="length" step="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label for="width" class="form-label">Width:</label>
+                            <input type="number" class="form-control" id="width" step="0.01">
+                        </div>
+                    </div>
 
-            <div id="circle-inputs" class="shape-inputs">
-                <div class="mb-3">
-                    <label for="radius" class="form-label">Radius:</label>
-                    <input type="number" class="form-control" id="radius" step="0.01">
-                </div>
-            </div>
+                    <div id="triangle-inputs" class="shape-inputs">
+                        <div class="mb-3">
+                            <label for="base" class="form-label">Base:</label>
+                            <input type="number" class="form-control" id="base" step="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label for="height" class="form-label">Height:</label>
+                            <input type="number" class="form-control" id="height" step="0.01">
+                        </div>
+                    </div>
 
-            <button class="btn btn-primary w-100" onclick="calculateArea()">Calculate Area</button>
-            
-            <div class="mt-4">
-                <h3 class="text-center">Result</h3>
-                <div id="result" class="text-center fs-4"></div>
+                    <div id="circle-inputs" class="shape-inputs">
+                        <div class="mb-3">
+                            <label for="radius" class="form-label">Radius:</label>
+                            <input type="number" class="form-control" id="radius" step="0.01">
+                        </div>
+                    </div>
+
+                    <div id="trapezoid-inputs" class="shape-inputs">
+                        <div class="mb-3">
+                            <label for="base1" class="form-label">Parallel Side 1:</label>
+                            <input type="number" class="form-control" id="base1" step="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label for="base2" class="form-label">Parallel Side 2:</label>
+                            <input type="number" class="form-control" id="base2" step="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label for="trapezoid-height" class="form-label">Height:</label>
+                            <input type="number" class="form-control" id="trapezoid-height" step="0.01">
+                        </div>
+                    </div>
+
+                    <div id="parallelogram-inputs" class="shape-inputs">
+                        <div class="mb-3">
+                            <label for="parallelogram-base" class="form-label">Base:</label>
+                            <input type="number" class="form-control" id="parallelogram-base" step="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label for="parallelogram-height" class="form-label">Height:</label>
+                            <input type="number" class="form-control" id="parallelogram-height" step="0.01">
+                        </div>
+                    </div>
+
+                    <div id="pentagon-inputs" class="shape-inputs">
+                        <div class="mb-3">
+                            <label for="pentagon-side" class="form-label">Side Length:</label>
+                            <input type="number" class="form-control" id="pentagon-side" step="0.01">
+                        </div>
+                    </div>
+
+                    <div id="hexagon-inputs" class="shape-inputs">
+                        <div class="mb-3">
+                            <label for="hexagon-side" class="form-label">Side Length:</label>
+                            <input type="number" class="form-control" id="hexagon-side" step="0.01">
+                        </div>
+                    </div>
+
+                    <div id="ellipse-inputs" class="shape-inputs">
+                        <div class="mb-3">
+                            <label for="major-axis" class="form-label">Major Axis:</label>
+                            <input type="number" class="form-control" id="major-axis" step="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label for="minor-axis" class="form-label">Minor Axis:</label>
+                            <input type="number" class="form-control" id="minor-axis" step="0.01">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary w-100" onclick="calculateArea()">Calculate Area</button>
+                    
+                    <div class="result">
+                        <h3 class="text-center mb-3">Result</h3>
+                        <div id="result" class="text-center fs-4"></div>
+                    </div>
+                </div>
+
+                <!-- Calculator Tab -->
+                <div class="tab-pane fade" id="calculator" role="tabpanel">
+                    <div class="calculator-display active">
+                        <div class="calculator">
+                            <input type="text" class="calc-display" id="calc-display" readonly>
+                            <div class="calc-buttons-container">
+                                <div class="calc-row">
+                                    <button class="calc-btn clear-btn" onclick="clearDisplay()">C</button>
+                                    <button class="calc-btn operator-btn" onclick="appendToDisplay('(')">(</button>
+                                    <button class="calc-btn operator-btn" onclick="appendToDisplay(')')">)</button>
+                                    <button class="calc-btn operator-btn" onclick="appendToDisplay('/')">÷</button>
+                                </div>
+                                <div class="calc-row">
+                                    <button class="calc-btn number-btn" onclick="appendToDisplay('7')">7</button>
+                                    <button class="calc-btn number-btn" onclick="appendToDisplay('8')">8</button>
+                                    <button class="calc-btn number-btn" onclick="appendToDisplay('9')">9</button>
+                                    <button class="calc-btn operator-btn" onclick="appendToDisplay('*')">×</button>
+                                </div>
+                                <div class="calc-row">
+                                    <button class="calc-btn number-btn" onclick="appendToDisplay('4')">4</button>
+                                    <button class="calc-btn number-btn" onclick="appendToDisplay('5')">5</button>
+                                    <button class="calc-btn number-btn" onclick="appendToDisplay('6')">6</button>
+                                    <button class="calc-btn operator-btn" onclick="appendToDisplay('-')">-</button>
+                                </div>
+                                <div class="calc-row">
+                                    <button class="calc-btn number-btn" onclick="appendToDisplay('1')">1</button>
+                                    <button class="calc-btn number-btn" onclick="appendToDisplay('2')">2</button>
+                                    <button class="calc-btn number-btn" onclick="appendToDisplay('3')">3</button>
+                                    <button class="calc-btn operator-btn" onclick="appendToDisplay('+')">+</button>
+                                </div>
+                                <div class="calc-row">
+                                    <button class="calc-btn number-btn" onclick="appendToDisplay('0')">0</button>
+                                    <button class="calc-btn number-btn" onclick="appendToDisplay('.')">.</button>
+                                    <button class="calc-btn equals-btn" onclick="calculate()">=</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
-        document.getElementById('shape').addEventListener('change', function() {
-            // Hide all input sections
-            document.querySelectorAll('.shape-inputs').forEach(el => {
-                el.classList.remove('active');
-            });
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show the initial shape inputs (square)
+            document.getElementById('square-inputs').classList.add('active');
             
-            // Show the selected shape's input section
-            document.getElementById(this.value + '-inputs').classList.add('active');
+            // Add event listener for shape selection
+            document.getElementById('shape').addEventListener('change', function() {
+                // Hide all input sections
+                document.querySelectorAll('.shape-inputs').forEach(el => {
+                    el.classList.remove('active');
+                });
+                
+                // Show the selected shape's input section
+                const selectedShape = this.value;
+                document.getElementById(selectedShape + '-inputs').classList.add('active');
+            });
         });
 
         function calculateArea() {
@@ -116,6 +421,33 @@
                 case 'circle':
                     dimensions.radius = document.getElementById('radius').value;
                     break;
+                case 'trapezoid':
+                    dimensions.base1 = document.getElementById('base1').value;
+                    dimensions.base2 = document.getElementById('base2').value;
+                    dimensions.height = document.getElementById('trapezoid-height').value;
+                    break;
+                case 'parallelogram':
+                    dimensions.base = document.getElementById('parallelogram-base').value;
+                    dimensions.height = document.getElementById('parallelogram-height').value;
+                    break;
+                case 'pentagon':
+                    dimensions.side = document.getElementById('pentagon-side').value;
+                    break;
+                case 'hexagon':
+                    dimensions.side = document.getElementById('hexagon-side').value;
+                    break;
+                case 'ellipse':
+                    dimensions.majorAxis = document.getElementById('major-axis').value;
+                    dimensions.minorAxis = document.getElementById('minor-axis').value;
+                    break;
+            }
+
+            // Validate inputs
+            for (let key in dimensions) {
+                if (!dimensions[key] || isNaN(dimensions[key]) || dimensions[key] <= 0) {
+                    document.getElementById('result').textContent = 'Please enter valid positive numbers for all dimensions';
+                    return;
+                }
             }
 
             fetch('/calculate', {
@@ -139,6 +471,25 @@
             .catch(error => {
                 document.getElementById('result').textContent = 'Error calculating area';
             });
+        }
+
+        // 4-Function Calculator functions
+        function appendToDisplay(value) {
+            document.getElementById('calc-display').value += value;
+        }
+
+        function clearDisplay() {
+            document.getElementById('calc-display').value = '';
+        }
+
+        function calculate() {
+            try {
+                const expression = document.getElementById('calc-display').value;
+                const result = eval(expression);
+                document.getElementById('calc-display').value = result;
+            } catch (error) {
+                document.getElementById('calc-display').value = 'Error';
+            }
         }
     </script>
 </body>
