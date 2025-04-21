@@ -110,6 +110,27 @@
             border: 1px solid rgba(46, 204, 113, 0.1);
             max-width: 320px;
             margin: 0 auto;
+            position: relative;
+        }
+
+        .history-toggle {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+            opacity: 0.5;
+            z-index: 2;
+        }
+
+        .history-toggle:hover {
+            color: #2ecc71;
+            opacity: 0.8;
         }
 
         .calc-display {
@@ -378,6 +399,112 @@
                 top: 15px;
             }
         }
+
+        .history-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 12px;
+            position: absolute;
+            top: 40px;
+            right: 5px;
+            width: 220px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: none;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(46, 204, 113, 0.1);
+            z-index: 1;
+        }
+
+        .history-panel.active {
+            display: block;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .history-header h3 {
+            margin: 0;
+            color: #333;
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        .history-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .clear-btn {
+            padding: 2px 6px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+            background-color: rgba(244, 67, 54, 0.7);
+            color: white;
+        }
+
+        .clear-btn:hover {
+            background-color: rgba(211, 47, 47, 0.8);
+        }
+
+        .history-list {
+            max-height: 180px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .history-item {
+            padding: 4px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            font-size: 0.8rem;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-item .timestamp {
+            color: #666;
+            font-size: 0.7rem;
+            opacity: 0.6;
+        }
+
+        .history-item .operation {
+            color: #333;
+            margin: 2px 0;
+            opacity: 0.8;
+        }
+
+        .history-item .result {
+            color: #4CAF50;
+            font-weight: bold;
+            opacity: 0.9;
+        }
+
+        /* Custom scrollbar for history list */
+        .history-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+            border-radius: 2px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.1);
+            border-radius: 2px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
@@ -511,6 +638,7 @@
                 <div class="tab-pane fade" id="calculator" role="tabpanel">
                     <div class="calculator-display active">
                         <div class="calculator">
+                            <button class="history-toggle" onclick="toggleHistory()" title="Show History">🕒</button>
                             <input type="text" class="calc-display" id="calc-display" readonly>
                             <div class="calc-buttons-container">
                                 <button class="calc-btn clear-btn" onclick="clearDisplay()">C</button>
@@ -534,6 +662,18 @@
                                 <button class="calc-btn operator-btn" onclick="handleSqrt()">√</button>
                                 <button class="calc-btn operator-btn" onclick="appendToDisplay('^')">^</button>
                                 <button class="calc-btn equals-btn" onclick="calculate()">=</button>
+                            </div>
+                        </div>
+                        <!-- Add History Panel -->
+                        <div class="history-panel" id="historyPanel">
+                            <div class="history-header">
+                                <h3>Calculation History</h3>
+                                <div class="history-controls">
+                                    <button onclick="clearHistory()" class="clear-btn">Clear</button>
+                                </div>
+                            </div>
+                            <div class="history-list" id="historyList">
+                                <!-- History items will be added here -->
                             </div>
                         </div>
                     </div>
@@ -666,6 +806,7 @@
                     document.getElementById('result').textContent = 'Error: ' + data.error;
                 } else {
                     document.getElementById('result').textContent = `Area: ${data.area} square units`;
+                    loadHistory();
                 }
             })
             .catch(error => {
@@ -726,12 +867,48 @@
                     display.classList.add('error');
                 } else {
                     display.value = data.result;
+                    loadHistory();
                 }
             })
             .catch(error => {
                 display.value = 'Error';
                 display.classList.add('error');
             });
+        }
+
+        // Add history functionality
+        function toggleHistory() {
+            const historyPanel = document.getElementById('historyPanel');
+            historyPanel.classList.toggle('active');
+        }
+
+        function loadHistory() {
+            fetch('/history')
+                .then(response => response.json())
+                .then(history => {
+                    const historyList = document.getElementById('historyList');
+                    historyList.innerHTML = '';
+                    history.reverse().forEach(item => {
+                        const historyItem = document.createElement('div');
+                        historyItem.className = 'history-item';
+                        historyItem.innerHTML = `
+                            <div class="timestamp">${item.timestamp}</div>
+                            <div class="operation">${item.operation}</div>
+                            <div class="result">= ${item.result}</div>
+                        `;
+                        historyList.appendChild(historyItem);
+                    });
+                });
+        }
+
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear the history?')) {
+                fetch('/history', { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(() => {
+                        loadHistory();
+                    });
+            }
         }
     </script>
 </body>

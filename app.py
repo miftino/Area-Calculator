@@ -1,9 +1,49 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 import math
+import json
+import os
+from datetime import datetime
 
 app = Flask(__name__)
 
+# Initialize history file path
+HISTORY_FILE = 'calculator_history.json'
+
 class Calculator:
+    @staticmethod
+    def load_history():
+        if os.path.exists(HISTORY_FILE):
+            with open(HISTORY_FILE, 'r') as f:
+                return json.load(f)
+        return []
+
+    @staticmethod
+    def save_history(history):
+        with open(HISTORY_FILE, 'w') as f:
+            json.dump(history, f)
+
+    @staticmethod
+    def add_to_history(operation, result):
+        history = Calculator.load_history()
+        history.append({
+            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'operation': operation,
+            'result': result
+        })
+        # Keep only last 100 entries
+        if len(history) > 100:
+            history = history[-100:]
+        Calculator.save_history(history)
+
+    @staticmethod
+    def clear_history():
+        Calculator.save_history([])
+
+    @staticmethod
+    def export_history():
+        history = Calculator.load_history()
+        return json.dumps(history, indent=2)
+
     @staticmethod
     def calculate_area(shape, dimensions):
         if shape == 'square':
@@ -104,6 +144,9 @@ def calculate():
         
         try:
             area = Calculator.calculate_area(shape, dimensions)
+            # Add to history
+            operation = f"Area of {shape}: {dimensions}"
+            Calculator.add_to_history(operation, f"{area:.2f} square units")
             return jsonify({'area': round(area, 2)})
         except (ValueError, KeyError) as e:
             return jsonify({'error': str(e)}), 400
@@ -113,11 +156,32 @@ def calculate():
         expression = data.get('expression')
         try:
             result = Calculator.evaluate_expression(expression)
+            # Add to history
+            Calculator.add_to_history(expression, result)
             return jsonify({'result': result})
         except Exception as e:
             return jsonify({'error': str(e)}), 400
     
     return jsonify({'error': 'Invalid request'}), 400
+
+@app.route('/history', methods=['GET', 'DELETE'])
+def handle_history():
+    if request.method == 'GET':
+        history = Calculator.load_history()
+        return jsonify(history)
+    elif request.method == 'DELETE':
+        Calculator.clear_history()
+        return jsonify({'message': 'History cleared'})
+
+@app.route('/export-history', methods=['GET'])
+def export_history():
+    history_text = Calculator.export_history()
+    return send_file(
+        history_text,
+        mimetype='application/json',
+        as_attachment=True,
+        download_name='calculator_history.json'
+    )
 
 if __name__ == '__main__':
     app.run(debug=True) 
