@@ -78,7 +78,7 @@ http://localhost:5000
 3. Click "Calculate Area" to see the result
 
 ### History
-- Click the clock icon (🕒) in the top right to view calculation history
+- Click the clock icon in the top right to view calculation history
 - Use the clear button to remove all history
 - History automatically updates after each calculation
 
